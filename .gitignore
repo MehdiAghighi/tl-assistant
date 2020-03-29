@@ -1,3 +1,4 @@
 .env
 Assistant.session
 Assistant.session-journal
+nohup.out
