@@ -1,0 +1,4 @@
+.env
+Assistant.session
+Assistant.session-journal
+Assistant.*
