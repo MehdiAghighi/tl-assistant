@@ -1,18 +1,17 @@
-from telethon import TelegramClient, events
+from telethon import TelegramClient, events, types, functions, sync
 import socks
 from dotenv import load_dotenv
 import os
 import logging
 
-# logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
-#                     level=logging.WARNING)
+logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
+                    level=logging.WARNING)
 
 # Loading Environment varriables
 load_dotenv()
 
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
-
 
 client = TelegramClient(
     'Assistant',
@@ -26,10 +25,15 @@ client = TelegramClient(
 @events.register(events.NewMessage(outgoing=True, func=lambda event: event.raw_text.startswith('!!')))
 async def newMessageSent(event):
     await client.delete_messages(event.chat_id, event.id)
-    text = event.raw_text[2:]
+    command = event.raw_text[2:]
     user = await event.get_chat()
-    if text == 'id':
-        await client.send_message("me", "[" + user.first_name + "]" + "(" + "https://t.me/" + user.username + ")" + " : " + "`" + str(user.id) + "`", link_preview=False)
+    if command == 'id':
+        if event.is_private:
+            await client.send_message("me", "[" + user.first_name + "]" + "(" + "https://t.me/" + user.username + ")" + " : " + "`" + str(user.id) + "`", link_preview=False)
+        if event.is_reply:
+            replyed_message = await event.get_reply_message()
+            replyed_user = await client.get_entity(replyed_message.from_id)
+            await client.send_message("me", "[" + replyed_user.first_name + "]" + "(" + "https://t.me/" + replyed_user.username + ")" + " : " + "`" + str(replyed_user.id) + "`", link_preview=False)
 
 
 @events.register(events.MessageRead(func=lambda e: e.is_private))

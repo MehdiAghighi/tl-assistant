@@ -2,3 +2,4 @@
 Assistant.session
 Assistant.session-journal
 nohup.out
+__pycache__
